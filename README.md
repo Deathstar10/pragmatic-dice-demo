@@ -26,7 +26,7 @@ pnpm dev
 
 # 10sec timer ✅
 
-# increment by one
+# user clicks on each bet position. each click will increment the bet by 10 ✅
 
 # after 10 sec disable and no more bets, wait 2 sec and display the result.
 
