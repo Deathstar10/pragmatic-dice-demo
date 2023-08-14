@@ -1,13 +1,18 @@
 import BetPosition from "@/components/BetPosition";
 import { useEffect, useRef, useState } from "react";
 
+type GameState = "start" | "end" | "pending";
+
 export default function Home() {
   const [countdown, setCountdown] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [gameState, setGameState] = useState<GameState>("end");
   const [userBalance, setUserBalance] = useState(10);
   const [bets, setBets] = useState(Array(6).fill(0));
+  const [disableBet, setDisableBet] = useState(false);
 
   function handleStart() {
+    setGameState("start");
     setCountdown(10);
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -31,12 +36,11 @@ export default function Home() {
     }
   }
 
-  function sumArray(arr: number[]) {
-    return;
-  }
   useEffect(() => {
     if (countdown <= 0 && intervalRef.current) {
       clearInterval(intervalRef.current);
+      setDisableBet(true);
+      setGameState("pending");
     }
   }, [countdown]);
 
@@ -56,6 +60,7 @@ export default function Home() {
               key={index}
               counter={bets[index]}
               onIncrement={() => handleBetCounter(index)}
+              disabled={disableBet}
             />
           ))}
       </div>
