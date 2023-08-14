@@ -10,10 +10,14 @@ export default function BetPosition({
   disabled: boolean;
 }) {
   return (
-    <div>
-      <p>Dice {position}</p>
-      <p>Bet: ${counter}</p>
-      <button onClick={onIncrement} disabled={disabled}>
+    <div className="border border-blue-500 px-4 py-4 shrink">
+      <p className="text-center">Dice {position}</p>
+      <p className="text-center">Bet: ${counter}</p>
+      <button
+        onClick={onIncrement}
+        disabled={disabled}
+        className="bg-blue-300 rounded text-black px-4 py-2 mx-2 my-2 disabled:cursor-not-allowed"
+      >
         Increment
       </button>
     </div>

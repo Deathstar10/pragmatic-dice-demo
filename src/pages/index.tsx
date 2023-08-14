@@ -92,36 +92,45 @@ export default function Home() {
 
   return (
     <>
-      <button onClick={handleStart}>Start the game</button>
-      <p>{countdown}</p>
+      <div className="w-4/5 mx-auto">
+        <div className="flex justify-center gap-4 my-4">
+          <button onClick={handleStart}>Start the game</button>
+          <p>Countdown: {countdown}</p>
 
-      <h2>Your balance is ${userBalance}</h2>
-      <div className="flex gap-2">
-        {Array(6)
-          .fill(0)
-          .map((value, index) => (
-            <BetPosition
-              position={index + 1}
-              key={index}
-              counter={bets[index]}
-              onIncrement={() => handleBetCounter(index)}
-              disabled={disableBet}
-            />
-          ))}
-      </div>
+          <h2>Your balance is ${userBalance}</h2>
+        </div>
 
-      <div>{gameState === "result" && <p>Dice Rolled is {result}</p>}</div>
-      <div>{gameState === "pending" ? <p>Dice is being rolled</p> : ""}</div>
-      <div>
-        {gameState === "result" ? (
-          finalAmount >= 0 ? (
-            <p>Your winning amount is ${finalAmount}</p>
+        <div className="flex gap-2 flex-wrap justify-center">
+          {Array(6)
+            .fill(0)
+            .map((value, index) => (
+              <BetPosition
+                position={index + 1}
+                key={index}
+                counter={bets[index]}
+                onIncrement={() => handleBetCounter(index)}
+                disabled={disableBet}
+              />
+            ))}
+        </div>
+
+        <div className="text-center">
+          {gameState === "result" && <p>Dice Rolled is {result}</p>}
+        </div>
+        <div className="text-center">
+          {gameState === "pending" ? <p>Dice is being rolled</p> : ""}
+        </div>
+        <div className="text-center">
+          {gameState === "result" ? (
+            finalAmount >= 0 ? (
+              <p>Your winning amount is ${finalAmount}</p>
+            ) : (
+              <p>You lost ${finalAmount * -1}</p>
+            )
           ) : (
-            <p>You lost ${finalAmount * -1}</p>
-          )
-        ) : (
-          ""
-        )}
+            ""
+          )}
+        </div>
       </div>
     </>
   );
