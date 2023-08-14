@@ -28,8 +28,10 @@ pnpm dev
 
 # user clicks on each bet position. each click will increment the bet by 10 ✅
 
-# after 10 sec disable and no more bets, wait 2 sec and display the result.
+# after 10 sec disable and no more bets ✅
 
-# display the result for 5 seconds
+# wait 2 sec and display the result.✅
 
-# reset the board
+# display the result for 5 seconds✅
+
+# reset the board✅

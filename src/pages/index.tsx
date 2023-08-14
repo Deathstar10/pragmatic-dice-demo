@@ -1,19 +1,22 @@
 import BetPosition from "@/components/BetPosition";
 import { useEffect, useRef, useState } from "react";
 
-type GameState = "start" | "end" | "pending";
+type GameState = "start" | "end" | "pending" | "result";
 
 export default function Home() {
-  const [countdown, setCountdown] = useState(0);
+  const [countdown, setCountdown] = useState(10);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [gameState, setGameState] = useState<GameState>("end");
   const [userBalance, setUserBalance] = useState(10);
   const [bets, setBets] = useState(Array(6).fill(0));
   const [disableBet, setDisableBet] = useState(false);
+  const [waitTime, setWaitTime] = useState(2000);
+  const [result, setResult] = useState<number | null>(null);
+  const [finalAmount, setFinalAmount] = useState(0);
 
   function handleStart() {
+    // Start the timer when the user clicks the button
     setGameState("start");
-    setCountdown(10);
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
@@ -23,14 +26,18 @@ export default function Home() {
   }
 
   function handleBetCounter(index: number) {
+    // Update the bet for corresponding Dice number
     const newBets = bets.slice();
     newBets[index] += 1;
     const totalSum = newBets.reduce(
       (acumulator, currentValue) => acumulator + currentValue,
       0
     );
-    if (totalSum > userBalance) {
-      alert(`Your exceeded your balance of ${userBalance}`);
+
+    if (userBalance <= 0) {
+      alert("You have insufficient funds");
+    } else if (totalSum > userBalance) {
+      alert(`Your bet exceeded your balance of ${userBalance}`);
     } else {
       setBets(newBets);
     }
@@ -38,15 +45,53 @@ export default function Home() {
 
   useEffect(() => {
     if (countdown <= 0 && intervalRef.current) {
+      // When the timer is below zero, we stop it and the game goes into pending mode
       clearInterval(intervalRef.current);
+
+      // Disable all the bets
       setDisableBet(true);
+
       setGameState("pending");
+
+      // We wait for 2 seconds before the dice is rolled
+      setTimeout(() => {
+        const randomNumber = Math.floor(Math.random() * 6 + 1);
+        setResult(randomNumber);
+        setGameState("result");
+
+        // We display the result for 5 seconds
+        setTimeout(() => {
+          setGameState("end");
+
+          // Clear all the bets upon reset
+          setBets(Array(6).fill(0));
+
+          setDisableBet(false);
+          setCountdown(10);
+        }, 5000);
+      }, waitTime);
     }
-  }, [countdown]);
+  }, [countdown, waitTime]);
+
+  useEffect(() => {
+    const updatedBets = bets.slice();
+    let finalAmount = 0;
+
+    if (result) {
+      for (let i = 0; i < updatedBets.length; i++) {
+        if (result === i + 1) {
+          finalAmount += updatedBets[i] * 2;
+        } else {
+          finalAmount = finalAmount - updatedBets[i];
+        }
+      }
+      setFinalAmount(finalAmount);
+      setUserBalance((c) => c + finalAmount);
+    }
+  }, [result, bets]);
 
   return (
     <>
-      <p>hello world</p>
       <button onClick={handleStart}>Start the game</button>
       <p>{countdown}</p>
 
@@ -63,6 +108,20 @@ export default function Home() {
               disabled={disableBet}
             />
           ))}
+      </div>
+
+      <div>{gameState === "result" && <p>Dice Rolled is {result}</p>}</div>
+      <div>{gameState === "pending" ? <p>Dice is being rolled</p> : ""}</div>
+      <div>
+        {gameState === "result" ? (
+          finalAmount >= 0 ? (
+            <p>Your winning amount is ${finalAmount}</p>
+          ) : (
+            <p>You lost ${finalAmount * -1}</p>
+          )
+        ) : (
+          ""
+        )}
       </div>
     </>
   );
